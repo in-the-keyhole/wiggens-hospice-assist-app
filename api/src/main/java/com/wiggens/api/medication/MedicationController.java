@@ -40,5 +40,11 @@ public class MedicationController {
         service.logDose(user.getUsername(), id, req);
         return ResponseEntity.noContent().build();
     }
-}
 
+    // Simple log listing by medication in chronological order (timeline view per med)
+    @GetMapping("/{id}/logs")
+    public ResponseEntity<java.util.List<com.wiggens.api.medication.dto.MedicationLogResponse>> logs(@AuthenticationPrincipal UserDetails user,
+                                                                                                     @PathVariable Long id) {
+        return ResponseEntity.ok(service.listLogs(id));
+    }
+}

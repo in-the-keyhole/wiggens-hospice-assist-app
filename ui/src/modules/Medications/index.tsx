@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { AppBar, Box, Button, Container, MenuItem, Stack, TextField, Toolbar, Typography } from '@mui/material'
 import { addMyMedication, archiveMedication, listMyMedications, logMedication, Medication, MedicationScheduleType } from '../../codex-example/api/medications'
+import { enqueueLog, flush as flushOffline } from '../../codex-example/api/offlineQueue'
 import { useAuth } from '../Auth/useAuth'
 import { useNavigate } from 'react-router-dom'
 
@@ -16,6 +17,12 @@ const Medications: React.FC = () => {
     setList(meds)
   }
   useEffect(() => { load() }, [token])
+  useEffect(() => {
+    const run = () => flushOffline(async (l) => logMedication(l.id, l.at, l.reason))
+    run()
+    const id = setInterval(run, 10000)
+    return () => clearInterval(id)
+  }, [])
 
   const onAdd = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,8 +38,13 @@ const Medications: React.FC = () => {
 
   const onLog = async (m: Medication) => {
     const reason = m.scheduleType === 'PRN' ? window.prompt('Reason/Symptom (required for PRN):') ?? undefined : undefined
-    await logMedication(m.id, new Date().toISOString(), reason)
-    alert('Logged')
+    try {
+      await logMedication(m.id, new Date().toISOString(), reason)
+      alert('Logged')
+    } catch {
+      enqueueLog({ id: m.id, at: new Date().toISOString(), reason })
+      alert('Offline: queued to sync')
+    }
   }
 
   return (
@@ -86,4 +98,3 @@ const Medications: React.FC = () => {
 }
 
 export default Medications
-

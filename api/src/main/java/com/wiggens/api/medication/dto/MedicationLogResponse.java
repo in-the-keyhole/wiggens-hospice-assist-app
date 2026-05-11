@@ -1,15 +1,16 @@
 package com.wiggens.api.medication.dto;
 
-import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.Instant;
 
 @Data
-public class MedicationLogRequest {
-    @NotNull
+@Builder
+public class MedicationLogResponse {
+    private Long id;
     private Instant at;
-    private String reason; // required for PRN
+    private String reason;
     private String amount;
     private String notes;
     private Integer painBefore;
@@ -18,3 +19,4 @@ public class MedicationLogRequest {
     private String administeredBy;
     private String photoUrl;
 }
+

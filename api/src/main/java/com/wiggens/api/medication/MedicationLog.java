@@ -23,5 +23,12 @@ public class MedicationLog {
     private Instant at; // administration time
 
     private String reason; // required for PRN
-}
 
+    private String amount; // e.g., 5mg, 2 tabs
+    private String notes;
+    private Integer painBefore;
+    private Integer painAfter;
+    private String symptoms;
+    private String administeredBy;
+    private String photoUrl; // optional reference to uploaded photo
+}

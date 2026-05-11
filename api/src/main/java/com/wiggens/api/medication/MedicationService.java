@@ -76,9 +76,40 @@ public class MedicationService {
                 .medication(m)
                 .at(req.getAt())
                 .reason(req.getReason())
+                .amount(req.getAmount())
+                .notes(req.getNotes())
+                .painBefore(req.getPainBefore())
+                .painAfter(req.getPainAfter())
+                .symptoms(req.getSymptoms())
+                .administeredBy(req.getAdministeredBy())
+                .photoUrl(req.getPhotoUrl())
                 .build();
         logRepo.save(log);
         audit("LOG", userEmail, id);
+    }
+
+    public java.util.List<com.wiggens.api.medication.dto.MedicationLogResponse> listLogs(Long medicationId) {
+        // naive: fetch all and sort in memory; a repository method could sort
+        return logRepo.findAll().stream()
+                .filter(l -> l.getMedication().getId().equals(medicationId))
+                .sorted(java.util.Comparator.comparing(MedicationLog::getAt))
+                .map(this::toLogDto)
+                .toList();
+    }
+
+    private com.wiggens.api.medication.dto.MedicationLogResponse toLogDto(MedicationLog l) {
+        return com.wiggens.api.medication.dto.MedicationLogResponse.builder()
+                .id(l.getId())
+                .at(l.getAt())
+                .reason(l.getReason())
+                .amount(l.getAmount())
+                .notes(l.getNotes())
+                .painBefore(l.getPainBefore())
+                .painAfter(l.getPainAfter())
+                .symptoms(l.getSymptoms())
+                .administeredBy(l.getAdministeredBy())
+                .photoUrl(l.getPhotoUrl())
+                .build();
     }
 
     private String sortKey(Medication m) {
