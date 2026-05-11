@@ -13,6 +13,7 @@ const Dashboard: React.FC = () => {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>Wiggens Dashboard</Typography>
           <Button color="inherit" onClick={()=>nav('/contacts')}>Contacts</Button>
           <Button color="inherit" onClick={()=>nav('/medications')}>Medications</Button>
+          <Button color="inherit" onClick={()=>nav('/visits')}>Visits</Button>
           {token ? (
             <Button color="inherit" onClick={logout}>Logout</Button>
           ) : (

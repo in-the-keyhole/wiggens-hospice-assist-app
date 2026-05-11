@@ -10,11 +10,13 @@ import Dashboard from './modules/Dashboard/Dashboard'
 import { AuthProvider } from './modules/Auth/useAuth'
 import Contacts from './modules/Contacts'
 import Medications from './modules/Medications'
+import Visits from './modules/Visits'
 
 const router = createBrowserRouter([
   { path: '/', element: <Dashboard/> },
   { path: '/contacts', element: <Contacts/> },
   { path: '/medications', element: <Medications/> },
+  { path: '/visits', element: <Visits/> },
   { path: '/login', element: <Login/> },
   { path: '/register', element: <Register/> },
   { path: '/forgot-password', element: <ForgotPassword/> },
