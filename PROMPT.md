@@ -4,7 +4,7 @@ You are iteratively building a timesheet application. Read and iterate over all 
 
 ## Repository URL
 
-repositoryUrl = <** Codex CLI please replace this with the specifiec github URL **>
+repositoryUrl = https://github.com/in-the-keyhole/wiggens-hospice-assist-app
 
 
 
