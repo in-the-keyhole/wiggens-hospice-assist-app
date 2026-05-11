@@ -11,6 +11,7 @@ const Dashboard: React.FC = () => {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>Wiggens Dashboard</Typography>
+          <Button color="inherit" onClick={()=>nav('/contacts')}>Contacts</Button>
           {token ? (
             <Button color="inherit" onClick={logout}>Logout</Button>
           ) : (
@@ -26,4 +27,3 @@ const Dashboard: React.FC = () => {
 }
 
 export default Dashboard
-
