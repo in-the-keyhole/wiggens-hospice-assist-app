@@ -70,6 +70,7 @@ The dev server runs on `http://localhost:5173` by default and proxies API reques
 - Medications: Add/list/archive meds with schedule; PRN logging requires reason; offline log queue with auto-sync.
 - Reminders: Local UI reminders for scheduled meds with acknowledge/snooze/mark-given; quiet hours support.
 - Visits: Add upcoming visits, reminders at configurable offsets, complete with notes/vitals/care changes; view past visits.
+- Symptoms: Record timestamped symptom entries with tags, notes, optional vitals, and pain score; filter by date or tag.
 
 ## Auth Overview
 - Register: `POST /codex-example/api/v1/auth/register` (email + password)
