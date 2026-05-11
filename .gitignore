@@ -1,0 +1,16 @@
+# General
+.DS_Store
+node_modules/
+dist/
+target/
+.idea/
+.vscode/
+
+# Java
+*.class
+*.log
+*.iml
+
+# Vite
+ui/.vite
+
