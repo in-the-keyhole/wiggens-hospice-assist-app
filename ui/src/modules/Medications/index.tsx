@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { AppBar, Box, Button, Container, MenuItem, Stack, TextField, Toolbar, Typography } from '@mui/material'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { AppBar, Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Snackbar, Stack, TextField, Toolbar, Typography } from '@mui/material'
 import { addMyMedication, archiveMedication, listMyMedications, logMedication, Medication, MedicationScheduleType } from '../../codex-example/api/medications'
 import { enqueueLog, flush as flushOffline } from '../../codex-example/api/offlineQueue'
 import { useAuth } from '../Auth/useAuth'
@@ -10,6 +10,15 @@ const Medications: React.FC = () => {
   const nav = useNavigate()
   const [list, setList] = useState<Medication[]>([])
   const [form, setForm] = useState<{ name: string; strength?: string; scheduleType: MedicationScheduleType; scheduleTimes?: string }>({ name: '', strength: '', scheduleType: 'SCHEDULED', scheduleTimes: '' })
+  const [due, setDue] = useState<{ m: Medication; time: string } | null>(null)
+  const snoozeMap = useRef<Record<number, number>>({})
+
+  const quiet = useMemo(() => {
+    const q = (import.meta.env.VITE_QUIET_HOURS as string | undefined) || '' // e.g., 22-07
+    const parts = q.split('-')
+    if (parts.length !== 2) return null
+    return { start: Number(parts[0]), end: Number(parts[1]) }
+  }, [])
 
   const load = async () => {
     if (!token) return
@@ -23,6 +32,34 @@ const Medications: React.FC = () => {
     const id = setInterval(run, 10000)
     return () => clearInterval(id)
   }, [])
+
+  useEffect(() => {
+    const isQuiet = () => {
+      if (!quiet) return false
+      const h = new Date().getHours()
+      if (quiet.start <= quiet.end) return h >= quiet.start && h < quiet.end
+      // wraps midnight
+      return h >= quiet.start || h < quiet.end
+    }
+    const checkDue = () => {
+      if (!token || isQuiet()) return
+      const now = new Date()
+      const nowHm = now.toTimeString().slice(0,5)
+      for (const m of list) {
+        if (m.scheduleType !== 'SCHEDULED' || !m.scheduleTimes) continue
+        const snoozeUntil = snoozeMap.current[m.id]
+        if (snoozeUntil && snoozeUntil > Date.now()) continue
+        const times = m.scheduleTimes.split(',').map(s=>s.trim())
+        if (times.includes(nowHm)) {
+          setDue({ m, time: nowHm })
+          break
+        }
+      }
+    }
+    const id = setInterval(checkDue, 30000)
+    checkDue()
+    return () => clearInterval(id)
+  }, [list, token, quiet])
 
   const onAdd = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -93,6 +130,21 @@ const Medications: React.FC = () => {
           ))}
         </Stack>
       </Container>
+
+      <Dialog open={!!due} onClose={()=>setDue(null)}>
+        <DialogTitle>Medication Due</DialogTitle>
+        <DialogContent>
+          <Typography>{due?.m.name} at {due?.time}</Typography>
+          <Typography variant="body2" color="text.secondary">{due?.m.dosageInstructions || due?.m.strength}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=>setDue(null)}>Acknowledge</Button>
+          <Button onClick={()=>{ if (due){ snoozeMap.current[due.m.id]=Date.now()+10*60000; setDue(null)} }}>Snooze 10m</Button>
+          <Button onClick={()=>{ if (due){ snoozeMap.current[due.m.id]=Date.now()+30*60000; setDue(null)} }}>Snooze 30m</Button>
+          <Button onClick={()=>{ if (due){ snoozeMap.current[due.m.id]=Date.now()+60*60000; setDue(null)} }}>Snooze 60m</Button>
+          <Button variant="contained" onClick={async ()=>{ if (due){ await onLog(due.m); setDue(null)} }}>Mark Given</Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }
