@@ -59,6 +59,18 @@ cd ui && npm run build
 
 The dev server runs on `http://localhost:5173` by default and proxies API requests to `http://localhost:8080` when configured.
 
+### Environment Variables
+- `VITE_API_URL` — base URL for the backend (default `http://localhost:8080/codex-example/api/v1`)
+- `VITE_INACTIVITY_MINUTES` — auto-logout inactivity minutes (default 30)
+- `VITE_QUIET_HOURS` — suppress medication alerts during hours, format `HH-HH` (e.g., `22-07`)
+- `VITE_VISIT_REMIND_MINUTES` — comma-separated minutes before a visit to alert (default `60,1440`)
+
+### Implemented Features
+- Contacts: Add/list patient-linked contacts; one-tap Call links.
+- Medications: Add/list/archive meds with schedule; PRN logging requires reason; offline log queue with auto-sync.
+- Reminders: Local UI reminders for scheduled meds with acknowledge/snooze/mark-given; quiet hours support.
+- Visits: Add upcoming visits, reminders at configurable offsets, complete with notes/vitals/care changes; view past visits.
+
 ## Auth Overview
 - Register: `POST /codex-example/api/v1/auth/register` (email + password)
 - Login: `POST /codex-example/api/v1/auth/login` (JWT returned)
@@ -74,4 +86,3 @@ In production, configure HTTPS termination to ensure transport encryption.
 - Validate inputs with Jakarta Bean Validation
 - Use Lombok annotations for boilerplate
 - Use conventional commits
-
