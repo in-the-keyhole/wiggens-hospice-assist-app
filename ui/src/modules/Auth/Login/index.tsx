@@ -24,6 +24,9 @@ const Login: React.FC = () => {
   return (
     <Container maxWidth="sm" sx={{ mt: 8 }}>
       <Typography variant="h4" gutterBottom>Sign In</Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        Demo user: <strong>demo@example.com</strong> / <strong>Password123!</strong>
+      </Typography>
       <form onSubmit={onSubmit}>
         <Stack spacing={2}>
           <TextField label="Email" type="email" value={email} onChange={e=>setEmail(e.target.value)} required />
@@ -41,4 +44,3 @@ const Login: React.FC = () => {
 }
 
 export default Login
-
