@@ -68,9 +68,16 @@ The dev server runs on `http://localhost:5173` by default and proxies API reques
 ### Implemented Features
 - Contacts: Add/list patient-linked contacts; one-tap Call links.
 - Medications: Add/list/archive meds with schedule; PRN logging requires reason; offline log queue with auto-sync.
-- Reminders: Local UI reminders for scheduled meds with acknowledge/snooze/mark-given; quiet hours support.
+- Reminders: Local UI reminders for scheduled meds with acknowledge/snooze/mark-given; quiet hours support and user preferences.
 - Visits: Add upcoming visits, reminders at configurable offsets, complete with notes/vitals/care changes; view past visits.
 - Symptoms: Record timestamped symptom entries with tags, notes, optional vitals, and pain score; filter by date or tag.
+- Secure Photos: Capture/upload photos (camera/gallery) with consent gate; images are encrypted at rest and served via auth-only endpoint; linkable to symptoms and med logs.
+- Daily Checklist: Configurable care tasks with frequency; mark complete; offline completion queue and history view.
+- Emergency Plan: Quick-access screen with hotline/nurse 1-tap call, patient context, optional location (not stored), and links to guidance.
+- Education Library: Simple searchable topics with per-user completed tracking.
+- Exports: CSV summary download for a date range (photos excluded by default).
+- Care Team (MVP): Invite/accept flows with roles (Owner/Caregiver/Viewer); audit-logged. Data sharing wiring to roles is a future enhancement.
+- Notification Preferences: Configure channels and quiet hours; test notification action.
 
 ## Auth Overview
 - Register: `POST /codex-example/api/v1/auth/register` (email + password)
@@ -80,6 +87,20 @@ The dev server runs on `http://localhost:5173` by default and proxies API reques
 - Reset Password: `POST /codex-example/api/v1/auth/reset-password` (use token + new password)
 
 In production, configure HTTPS termination to ensure transport encryption.
+
+## Security & Privacy
+- All API endpoints protected by JWT except auth/register/login/reset and invite acceptance.
+- Photo uploads are encrypted at rest (AES-GCM) and only served to authenticated users; URLs contain no PHI.
+- Minimal PHI in notifications; exports exclude photos by default.
+- Audit log captures key actions (med CRUD, symptoms, visits, checklist completions, login/logout, invites).
+
+## Seed Demo User
+- Backend seeds a demo account on startup: `demo@example.com` / `Password123!`
+- The login screen displays these credentials for quick exploration.
+
+## Git & CI
+- Use `mvn` (not `./mvnw`) for Maven commands.
+- Conventional commits encouraged: `feat:`, `fix:`, `chore:`, `test:`
 
 ## Contributing
 - Follow layered architecture: Controller -> Service -> Repository
