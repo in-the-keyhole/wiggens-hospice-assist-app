@@ -18,6 +18,12 @@ const Medications: React.FC = () => {
   const [consentOpen, setConsentOpen] = useState(false)
 
   const quiet = useMemo(() => {
+    try {
+      const prefs = JSON.parse(localStorage.getItem('notificationPrefs') || '{}')
+      if (prefs.quiet && typeof prefs.quiet.start==='number' && typeof prefs.quiet.end==='number') {
+        return { start: prefs.quiet.start, end: prefs.quiet.end }
+      }
+    } catch {}
     const q = (import.meta.env.VITE_QUIET_HOURS as string | undefined) || '' // e.g., 22-07
     const parts = q.split('-')
     if (parts.length !== 2) return null

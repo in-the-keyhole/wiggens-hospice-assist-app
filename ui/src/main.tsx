@@ -16,6 +16,7 @@ import Checklist from './modules/Checklist'
 import Emergency from './modules/Emergency'
 import Education from './modules/Education'
 import Exports from './modules/Exports'
+import Preferences from './modules/Preferences'
 
 const router = createBrowserRouter([
   { path: '/', element: <Dashboard/> },
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
   { path: '/emergency', element: <Emergency/> },
   { path: '/education', element: <Education/> },
   { path: '/exports', element: <Exports/> },
+  { path: '/preferences', element: <Preferences/> },
   { path: '/login', element: <Login/> },
   { path: '/register', element: <Register/> },
   { path: '/forgot-password', element: <ForgotPassword/> },
