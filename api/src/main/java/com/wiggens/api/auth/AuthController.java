@@ -24,6 +24,21 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(request));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@AuthenticationPrincipal UserDetails user) {
+        try {
+            com.wiggens.api.audit.AuditRepository repo = (com.wiggens.api.audit.AuditRepository) org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext().getBean(com.wiggens.api.audit.AuditRepository.class);
+            repo.save(com.wiggens.api.audit.AuditEntry.builder()
+                    .actorEmail(user.getUsername())
+                    .action("LOGOUT")
+                    .entity("User")
+                    .entityId(0L)
+                    .at(java.time.Instant.now())
+                    .build());
+        } catch (Exception ignored) {}
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/me")
     public ResponseEntity<?> me(@AuthenticationPrincipal UserDetails user) {
         return ResponseEntity.ok(new java.util.HashMap<String, Object>() {{
@@ -43,4 +58,3 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 }
-

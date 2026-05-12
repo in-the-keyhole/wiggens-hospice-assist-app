@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setAndStoreToken(res.data.token)
   }
 
-  const logout = () => setAndStoreToken(null)
+  const logout = () => { try { api.post('/auth/logout') } catch {} ; setAndStoreToken(null) }
 
   useEffect(() => {
     const mark = () => { lastActivity.current = Date.now() }
@@ -60,4 +60,3 @@ export const useAuth = () => {
   if (!ctx) throw new Error('useAuth must be used within AuthProvider')
   return ctx
 }
-

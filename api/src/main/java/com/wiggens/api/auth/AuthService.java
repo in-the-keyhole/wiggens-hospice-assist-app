@@ -44,6 +44,17 @@ public class AuthService {
                 request.getEmail(), request.getPassword()
         ));
         String token = jwtService.generateToken(request.getEmail().toLowerCase());
+        try {
+            // Best-effort audit; ignore failures to not block auth
+            com.wiggens.api.audit.AuditRepository auditRepo = (com.wiggens.api.audit.AuditRepository) org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext().getBean(com.wiggens.api.audit.AuditRepository.class);
+            auditRepo.save(com.wiggens.api.audit.AuditEntry.builder()
+                    .actorEmail(request.getEmail().toLowerCase())
+                    .action("LOGIN")
+                    .entity("User")
+                    .entityId(0L)
+                    .at(java.time.Instant.now())
+                    .build());
+        } catch (Exception ignored) {}
         return new AuthResponse(token);
     }
 
@@ -76,4 +87,3 @@ public class AuthService {
         tokenRepository.delete(token);
     }
 }
-
