@@ -15,6 +15,7 @@ const Dashboard: React.FC = () => {
           <Button color="inherit" onClick={()=>nav('/medications')}>Medications</Button>
           <Button color="inherit" onClick={()=>nav('/visits')}>Visits</Button>
           <Button color="inherit" onClick={()=>nav('/checklist')}>Checklist</Button>
+          <Button color="inherit" onClick={()=>nav('/emergency')}>Emergency</Button>
           {token ? (
             <Button color="inherit" onClick={logout}>Logout</Button>
           ) : (
