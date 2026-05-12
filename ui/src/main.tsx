@@ -14,6 +14,7 @@ import Visits from './modules/Visits'
 import Symptoms from './modules/Symptoms'
 import Checklist from './modules/Checklist'
 import Emergency from './modules/Emergency'
+import Education from './modules/Education'
 
 const router = createBrowserRouter([
   { path: '/', element: <Dashboard/> },
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
   { path: '/symptoms', element: <Symptoms/> },
   { path: '/checklist', element: <Checklist/> },
   { path: '/emergency', element: <Emergency/> },
+  { path: '/education', element: <Education/> },
   { path: '/login', element: <Login/> },
   { path: '/register', element: <Register/> },
   { path: '/forgot-password', element: <ForgotPassword/> },
