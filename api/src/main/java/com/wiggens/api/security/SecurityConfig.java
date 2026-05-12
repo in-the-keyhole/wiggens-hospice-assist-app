@@ -64,7 +64,8 @@ public class SecurityConfig {
                         .requestMatchers("/codex-example/api/v1/auth/register", 
                                          "/codex-example/api/v1/auth/login", 
                                          "/codex-example/api/v1/auth/forgot-password", 
-                                         "/codex-example/api/v1/auth/reset-password").permitAll()
+                                         "/codex-example/api/v1/auth/reset-password",
+                                         "/codex-example/api/v1/caregivers/accept").permitAll()
                         .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -73,4 +74,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-
