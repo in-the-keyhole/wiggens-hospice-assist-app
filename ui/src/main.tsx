@@ -12,6 +12,7 @@ import Contacts from './modules/Contacts'
 import Medications from './modules/Medications'
 import Visits from './modules/Visits'
 import Symptoms from './modules/Symptoms'
+import Checklist from './modules/Checklist'
 
 const router = createBrowserRouter([
   { path: '/', element: <Dashboard/> },
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
   { path: '/medications', element: <Medications/> },
   { path: '/visits', element: <Visits/> },
   { path: '/symptoms', element: <Symptoms/> },
+  { path: '/checklist', element: <Checklist/> },
   { path: '/login', element: <Login/> },
   { path: '/register', element: <Register/> },
   { path: '/forgot-password', element: <ForgotPassword/> },
