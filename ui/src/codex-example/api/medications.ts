@@ -32,7 +32,6 @@ export async function archiveMedication(id: number): Promise<void> {
   await api.put(`/medications/${id}/archive`)
 }
 
-export async function logMedication(id: number, at: string, reason?: string): Promise<void> {
-  await api.post(`/medications/${id}/logs`, { at, reason })
+export async function logMedication(id: number, at: string, reason?: string, photoUrl?: string): Promise<void> {
+  await api.post(`/medications/${id}/logs`, { at, reason, photoUrl })
 }
-

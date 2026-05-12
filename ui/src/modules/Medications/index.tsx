@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { AppBar, Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Snackbar, Stack, TextField, Toolbar, Typography } from '@mui/material'
 import { addMyMedication, archiveMedication, listMyMedications, logMedication, Medication, MedicationScheduleType } from '../../codex-example/api/medications'
+import { uploadPhoto } from '../../codex-example/api/uploads'
 import { enqueueLog, flush as flushOffline } from '../../codex-example/api/offlineQueue'
 import { useAuth } from '../Auth/useAuth'
 import { useNavigate } from 'react-router-dom'
@@ -12,6 +13,9 @@ const Medications: React.FC = () => {
   const [form, setForm] = useState<{ name: string; strength?: string; scheduleType: MedicationScheduleType; scheduleTimes?: string }>({ name: '', strength: '', scheduleType: 'SCHEDULED', scheduleTimes: '' })
   const [due, setDue] = useState<{ m: Medication; time: string } | null>(null)
   const snoozeMap = useRef<Record<number, number>>({})
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [pendingMedForPhoto, setPendingMedForPhoto] = useState<Medication | null>(null)
+  const [consentOpen, setConsentOpen] = useState(false)
 
   const quiet = useMemo(() => {
     const q = (import.meta.env.VITE_QUIET_HOURS as string | undefined) || '' // e.g., 22-07
@@ -84,6 +88,16 @@ const Medications: React.FC = () => {
     }
   }
 
+  const onLogWithPhoto = async (m: Medication) => {
+    if (!localStorage.getItem('photoConsentAccepted')) {
+      setPendingMedForPhoto(m)
+      setConsentOpen(true)
+      return
+    }
+    setPendingMedForPhoto(m)
+    fileInputRef.current?.click()
+  }
+
   return (
     <>
       <AppBar position="static">
@@ -124,6 +138,7 @@ const Medications: React.FC = () => {
               </Box>
               <Box>
                 <Button sx={{ mr: 1 }} onClick={()=>onLog(m)} variant="outlined">Log</Button>
+                <Button sx={{ mr: 1 }} onClick={()=>onLogWithPhoto(m)} variant="outlined">Log + Photo</Button>
                 <Button color="error" onClick={()=>onArchive(m)} variant="outlined">Archive</Button>
               </Box>
             </Box>
@@ -143,6 +158,29 @@ const Medications: React.FC = () => {
           <Button onClick={()=>{ if (due){ snoozeMap.current[due.m.id]=Date.now()+30*60000; setDue(null)} }}>Snooze 30m</Button>
           <Button onClick={()=>{ if (due){ snoozeMap.current[due.m.id]=Date.now()+60*60000; setDue(null)} }}>Snooze 60m</Button>
           <Button variant="contained" onClick={async ()=>{ if (due){ await onLog(due.m); setDue(null)} }}>Mark Given</Button>
+        </DialogActions>
+      </Dialog>
+      <input ref={fileInputRef} type="file" accept="image/*" capture="environment" style={{ display:'none' }} onChange={async e=>{
+        const f = e.target.files?.[0]
+        const m = pendingMedForPhoto
+        setPendingMedForPhoto(null)
+        if (!f || !m) return
+        try {
+          const res = await uploadPhoto(f)
+          await logMedication(m.id, new Date().toISOString(), m.scheduleType === 'PRN' ? window.prompt('Reason/Symptom (required for PRN):') ?? undefined : undefined, res.url)
+          alert('Logged with photo')
+        } catch (e) {
+          alert('Failed to upload or log')
+        }
+      }} />
+      <Dialog open={consentOpen} onClose={()=>setConsentOpen(false)}>
+        <DialogTitle>Consent Required</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2">By uploading photos, you acknowledge they may contain Protected Health Information (PHI). Photos are stored encrypted and only accessible to authorized users. Do you consent to store such photos?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=>{ setConsentOpen(false); setPendingMedForPhoto(null) }}>Cancel</Button>
+          <Button variant="contained" onClick={()=>{ localStorage.setItem('photoConsentAccepted','true'); setConsentOpen(false); fileInputRef.current?.click() }}>I Consent</Button>
         </DialogActions>
       </Dialog>
     </>
